@@ -3,6 +3,7 @@
     <Page>
         <ActionBar title="nearBuy"/>
         <GridLayout columns="*" rows="*">
+            <TextField :text="textFieldValue" hint="Enter text..." />
             <Label class="message" :text="msg" col="0" row="0"/>
             <Button text="Next" @tap="onButtonTap" />
         </GridLayout>
