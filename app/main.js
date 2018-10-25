@@ -3,6 +3,8 @@ import App from './components/App'
 
 import VueDevtools from 'nativescript-vue-devtools'
 
+
+
 if(TNS_ENV !== 'production') {
   Vue.use(VueDevtools)
 }
@@ -10,6 +12,8 @@ if(TNS_ENV !== 'production') {
 Vue.config.silent = (TNS_ENV === 'production')
 
 Vue.registerElement("Mapbox", () => require("nativescript-mapbox").MapboxView)
+
+
 
 new Vue({
   render: h => h('frame', [h(App)])

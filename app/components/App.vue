@@ -2,17 +2,44 @@
 <template>
     <Page>
         <ActionBar title="nearBuy"/>
-        <GridLayout columns="*" rows="*">
-            <TextField :text="textFieldValue" hint="Enter text..." />
-            <Label class="message" :text="msg" col="0" row="0"/>
-            <Button text="Next" @tap="onButtonTap" />
-        </GridLayout>
+        <WrapLayout>
+            <TextField :text="textFieldValue" hint="Enter a product..." />
+            <Button text="Search" @tap="onButtonTap" />
+        </WrapLayout>
     </Page>
 </template>
 
+
 <script>
+    
     //Importing the map component
     import Map from './map'
+    
+    //Wiring firebase
+    const firebase = require("nativescript-plugin-firebase");
+ 
+    firebase.init({
+     // Optionally pass in properties for database, authentication and cloud messaging,
+     // see their respective docs.
+    }).then(
+    function (instance) {
+      
+      
+
+      console.log("firebase.init done");
+      //Looping over collection and display/get all data in it
+      var productsCollection = firebase.firestore.collection("products");
+      productsCollection.get().then(querySnapshot => {
+        querySnapshot.forEach(doc => {
+          console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
+        });
+      });
+      
+    },
+    function (error) {
+      console.log("firebase.init error: " + error);
+    }
+);
     export default {
         methods: {
             onButtonTap() {
@@ -25,7 +52,6 @@
       }
     }
   }
-
 
 
 
