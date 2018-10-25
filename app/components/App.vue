@@ -3,8 +3,14 @@
     <Page>
         <ActionBar title="nearBuy"/>
         <WrapLayout>
-            <TextField :text="textFieldValue" hint="Enter a product..." />
+            <TextField :text="msg" hint="Enter a product..." />
             <Button text="Search" @tap="onButtonTap" />
+            <ListView for="item in items" @itemTap="onItemTap">
+            <v-template>
+            <!-- Shows the list item label in the default color and style. -->
+            <Label :text="item.message" />
+            </v-template>
+            </ListView>
         </WrapLayout>
     </Page>
 </template>
@@ -25,15 +31,47 @@
     function (instance) {
       
       
-
       console.log("firebase.init done");
+
       //Looping over collection and display/get all data in it
       var productsCollection = firebase.firestore.collection("products");
-      productsCollection.get().then(querySnapshot => {
+   
+    let rawInput = "post it";
+    //Splitting raw input into words
+    let splitInput = rawInput.split(" ");
+    let searchProductResults = [];
+    for (let word of splitInput) {
+        console.log(word);
+                //ASYNC
+                productsCollection.where("tags", "array-contains", word).get().then(function(querySnapshot) {
+                    querySnapshot.forEach(function(doc) {
+                        searchProductResults.push("hello");
+                        console.log('1');
+                        // doc.data() is never undefined for query doc snapshots
+
+                        console.log(searchProductResults);
+                        searchProductResults.forEach(function(product){
+                            //if (product.data().barcode !== doc.data().barcode) {
+                               
+                           // }
+                        })
+                        
+                       
+                    });
+                })
+
+
+                .catch(function(error) {
+                    console.log("Error getting documents: ", error);
+                });        
+    }
+
+    
+     /* productsCollection.get().then(querySnapshot => {
         querySnapshot.forEach(doc => {
           console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
         });
-      });
+      });*/
       
     },
     function (error) {
@@ -48,7 +86,11 @@
     },
     data() {
       return {
-        msg: 'Hello World!'
+        msg: 'Enter article..',
+        items: [
+      { message: 'Foo' },
+      { message: 'Bar' }
+    ]
       }
     }
   }
