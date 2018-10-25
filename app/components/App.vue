@@ -29,49 +29,57 @@
      // see their respective docs.
     }).then(
     function (instance) {
-      
-      
+
       console.log("firebase.init done");
 
       //Looping over collection and display/get all data in it
       var productsCollection = firebase.firestore.collection("products");
    
-    let rawInput = "post it";
+    let rawInput = "green tea";
     //Splitting raw input into words
     let splitInput = rawInput.split(" ");
     let searchProductResults = [];
+    //Looping over every searched word
     for (let word of splitInput) {
         console.log(word);
-                //ASYNC
+                
+                //Looping over each found element
                 productsCollection.where("tags", "array-contains", word).get().then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        searchProductResults.push("hello");
-                        console.log('1');
+                       
                         // doc.data() is never undefined for query doc snapshots
-
-                        console.log(searchProductResults);
-                        searchProductResults.forEach(function(product){
-                            //if (product.data().barcode !== doc.data().barcode) {
-                               
-                           // }
-                        })
+                        if (searchProductResults.length == 0) {
+                            searchProductResults.push(doc.data());
+                        }
+                        
+                        else {
+                            let found = false;
+                            searchProductResults.forEach(function(product){
+                                
+                                if (product.barcode == doc.data().barcode) {
+                                   found = true; 
+                                }
+                            })
+                            if(found) {
+                                searchProductResults.push(doc.data());
+                            }
+      
+ 
+                            
+                        }
+                       
                         
                        
                     });
+                    console.log(searchProductResults)
                 })
 
-
+                
                 .catch(function(error) {
                     console.log("Error getting documents: ", error);
-                });        
+                }); 
     }
 
-    
-     /* productsCollection.get().then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-          console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
-        });
-      });*/
       
     },
     function (error) {
