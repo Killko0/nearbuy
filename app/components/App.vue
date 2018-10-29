@@ -5,10 +5,10 @@
         <WrapLayout>
             <TextField v-model="textFieldValue" hint="Enter a product..." />
             <Button text="Search" @tap="onButtonTap" />
-            <ListView for="item in items" @itemTap="onItemTap">
+            <ListView  for="product in searchedProds" @itemTap="onItemTap">
             <v-template>
             <!-- Shows the list item label in the default color and style. -->
-            <Label :text="item.message" />
+            <Label :text="product.name" />
             </v-template>
             </ListView>
         </WrapLayout>
@@ -19,59 +19,10 @@
 <script>
     
 
-    function search(rawInput){
-
-        //Looping over collection and display/get all data in it
-        var productsCollection = firebase.firestore.collection("products");
-   
-        //Splitting raw input into words
-        let splitInput = rawInput.split(" ");
-        let searchProductResults = [];
-   
-        //Looping over every searched word
-        for (let word of splitInput) {
-            console.log(word);
-                
-            //Looping over each found element
-            productsCollection.where("tags", "array-contains", word).get().then(function(querySnapshot) {
-                querySnapshot.forEach(function(doc) {
-                       
-                // doc.data() is never undefined for query doc snapshots
-                if (searchProductResults.length == 0) {
-                    searchProductResults.push(doc.data());
-                }
-                else {
-                    let found = false;
-                    searchProductResults.forEach(function(product){
-                                
-                        if (product.barcode == doc.data().barcode) {
-                                   found = true; 
-                                }
-                            })
-                            if(found) {
-                                searchProductResults.push(doc.data());
-                            }
-      
- 
-                            
-                        }
-                       
-                        
-                       
-                    });
-                    console.log(searchProductResults)
-                })
-
-                
-                .catch(function(error) {
-                    console.log("Error getting documents: ", error);
-                }); 
-    }
-    };
-
     //Importing the map component
     import Map from './map'
-    
+    import { sep } from 'path';
+    let searchProductResults = [];
     //Wiring firebase
     const firebase = require("nativescript-plugin-firebase");
  
@@ -82,7 +33,7 @@
     function (instance) {
 
       console.log("firebase.init done");
-        search();
+       
 
 
       
@@ -95,13 +46,73 @@
         methods: {
             onButtonTap() {
                 console.log(this.$data.textFieldValue);
-                search(this.$data.textFieldValue);
-                //this.$navigateTo(Map);
+                let rawInput= this.$data.textFieldValue;
+        let vm= this;
+        let promise;
+        //Looping over collection and display/get all data in it
+        var productsCollection = firebase.firestore.collection("products");
+   
+        //Splitting raw input into words
+        let splitInput = rawInput.split(" ");
+        //promise = new Promise(resolve => {
+           
+        //Looping over every searched word
+        for (let word of splitInput) {
+            console.log(word);
+                
+            //Looping over each found element
+            productsCollection.where("tags", "array-contains", word).get().then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                       
+                // doc.data() is never undefined for query doc snapshots
+                if (searchProductResults.length == 0) {
+                    vm.$data.searchedProds.push(doc.data());
+                    searchProductResults.push(doc.data());
+                }
+                else {
+                    let found = false;
+                    searchProductResults.forEach(function(product){
+                                
+                        if (product.barcode == doc.data().barcode) {
+                                   found = true; 
+                                }
+                            })
+                        if(!found) {
+                            vm.$data.searchedProds.push(doc.data());
+                            searchProductResults.push(doc.data());
+                        }
+         
+                }
+                       
+
+                       
+                });
+                   
+                
+
+                
+
+                }).then(function(){
+                    console.log(searchProductResults);
+                    
+                })
+
+                
+                .catch(function(error) {
+                    console.log("Error getting documents: ", error);
+                }); 
+
+    }
+   
+                    console.log(this);
+              
+               
             }
         },
         data() {
             return {
                 textFieldValue: "",
+                searchedProds:[],
                 items: [
                     { message: 'Foo' },
                     { message: 'Bar' }
