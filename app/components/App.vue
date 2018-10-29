@@ -3,7 +3,7 @@
     <Page>
         <ActionBar title="nearBuy"/>
         <WrapLayout>
-            <TextField :text="msg" hint="Enter a product..." />
+            <TextField v-model="textFieldValue" hint="Enter a product..." />
             <Button text="Search" @tap="onButtonTap" />
             <ListView for="item in items" @itemTap="onItemTap">
             <v-template>
@@ -18,45 +18,33 @@
 
 <script>
     
-    //Importing the map component
-    import Map from './map'
-    
-    //Wiring firebase
-    const firebase = require("nativescript-plugin-firebase");
- 
-    firebase.init({
-     // Optionally pass in properties for database, authentication and cloud messaging,
-     // see their respective docs.
-    }).then(
-    function (instance) {
 
-      console.log("firebase.init done");
+    function search(rawInput){
 
-      //Looping over collection and display/get all data in it
-      var productsCollection = firebase.firestore.collection("products");
+        //Looping over collection and display/get all data in it
+        var productsCollection = firebase.firestore.collection("products");
    
-    let rawInput = "green tea";
-    //Splitting raw input into words
-    let splitInput = rawInput.split(" ");
-    let searchProductResults = [];
-    //Looping over every searched word
-    for (let word of splitInput) {
-        console.log(word);
+        //Splitting raw input into words
+        let splitInput = rawInput.split(" ");
+        let searchProductResults = [];
+   
+        //Looping over every searched word
+        for (let word of splitInput) {
+            console.log(word);
                 
-                //Looping over each found element
-                productsCollection.where("tags", "array-contains", word).get().then(function(querySnapshot) {
-                    querySnapshot.forEach(function(doc) {
+            //Looping over each found element
+            productsCollection.where("tags", "array-contains", word).get().then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
                        
-                        // doc.data() is never undefined for query doc snapshots
-                        if (searchProductResults.length == 0) {
-                            searchProductResults.push(doc.data());
-                        }
-                        
-                        else {
-                            let found = false;
-                            searchProductResults.forEach(function(product){
+                // doc.data() is never undefined for query doc snapshots
+                if (searchProductResults.length == 0) {
+                    searchProductResults.push(doc.data());
+                }
+                else {
+                    let found = false;
+                    searchProductResults.forEach(function(product){
                                 
-                                if (product.barcode == doc.data().barcode) {
+                        if (product.barcode == doc.data().barcode) {
                                    found = true; 
                                 }
                             })
@@ -79,6 +67,23 @@
                     console.log("Error getting documents: ", error);
                 }); 
     }
+    };
+
+    //Importing the map component
+    import Map from './map'
+    
+    //Wiring firebase
+    const firebase = require("nativescript-plugin-firebase");
+ 
+    firebase.init({
+     // Optionally pass in properties for database, authentication and cloud messaging,
+     // see their respective docs.
+    }).then(
+    function (instance) {
+
+      console.log("firebase.init done");
+        search();
+
 
       
     },
@@ -89,20 +94,30 @@
     export default {
         methods: {
             onButtonTap() {
-            this.$navigateTo(Map);
-        }
-    },
-    data() {
-      return {
-        msg: 'Enter article..',
-        items: [
-      { message: 'Foo' },
-      { message: 'Bar' }
-    ]
-      }
-    }
-  }
+                console.log(this.$data.textFieldValue);
+                search(this.$data.textFieldValue);
+                //this.$navigateTo(Map);
+            }
+        },
+        data() {
+            return {
+                textFieldValue: "",
+                items: [
+                    { message: 'Foo' },
+                    { message: 'Bar' }
+                ]
 
+            }
+        },
+
+        created() {
+            console.log("created!");
+            
+            
+
+        }
+      
+    }
 
 
 </script>
