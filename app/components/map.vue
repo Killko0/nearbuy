@@ -24,11 +24,19 @@
 <script>
     import * as utils from "utils/utils";
     export default {
+        props: {
+            name: {
+                type: String
+            },
+            textFieldValue: ""
+        
+        },
         data () {
             return { };
         },
         methods: {
             onMapReady(args) {
+                console.log(this.name);
                 args.map.addMarkers([
                     {
                         lat: 37.7397,
@@ -43,6 +51,7 @@
             }
         }
     };
+
 </script> 
  
 

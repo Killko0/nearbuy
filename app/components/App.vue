@@ -91,6 +91,7 @@ export default {
     },
     onProductTap(event){
         console.log(event.item.name);
+        this.$navigateTo(Map, {props:{name: event.item.name}});
     }
 
   },
