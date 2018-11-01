@@ -20,6 +20,7 @@
 //Importing the map component
 import Map from "./map";
 import { sep } from "path";
+import { login } from 'nativescript-plugin-firebase';
 let searchProductResults = [];
 //Wiring firebase
 const firebase = require("nativescript-plugin-firebase");
@@ -37,7 +38,7 @@ firebase
       console.log("firebase.init error: " + error);
     }
   );
-
+console.log("i am app");
 export default {
   methods: {
     onButtonTap() {
@@ -91,7 +92,7 @@ export default {
     },
     onProductTap(event){
         console.log(event.item.name);
-        this.$navigateTo(Map, {props:{name: event.item.name}});
+        this.$navigateTo(Map, {props:{barcode: event.item.barcode}});
     }
 
   },
