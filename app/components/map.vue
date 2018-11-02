@@ -9,7 +9,7 @@
                     longitude="13.446464"
                     hideCompass="true"
                     zoomLevel="12"
-                    showUserLocation="false"
+                    showUserLocation="true"
                     disableZoom="false"
                     disableRotation="false"
                     disableScroll="false"
@@ -23,6 +23,7 @@
 
 <script>
 const firebase = require("nativescript-plugin-firebase");
+const mapbox = require("nativescript-mapbox");
 
 console.log("im map");
 import * as utils from "utils/utils";
@@ -39,7 +40,20 @@ export default {
   methods: {
     onMapReady(args) {
       console.log(this.barcode);
-
+      args.map.getUserLocation().then(function(userLocation) {
+        console.log(
+          "Current user location: " +
+            userLocation.location.lat +
+            ", " +
+            userLocation.location.lng
+        );
+        console.log("Current user speed: " + userLocation.speed);
+      });
+      /*args.map.setCenter({
+        lat: 52.360216, // mandatory
+        lng: 4.889168, // mandatory
+        animated: false // default true
+      });*/
       var storesCollection = firebase.firestore.collection("stores");
       storesCollection
         .where("products", "array-contains", this.barcode)
